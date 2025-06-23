@@ -48,7 +48,7 @@ def scrape_google_doc_tables(url):
             print("Error: Could not extract document ID from URL")
             return []
         
-        print(f"Fetching document from: {public_url}")
+        # print(f"Fetching document from: {public_url}")
         
         # Set headers to mimic a browser request
         headers = {
@@ -72,7 +72,6 @@ def scrape_google_doc_tables(url):
         extracted_tables = []
         
         for i, table in enumerate(tables):
-            print(f"\n--- Processing Table {i + 1} ---")
             
             # Extract table data
             table_data = []
@@ -112,58 +111,49 @@ def scrape_google_doc_tables(url):
         print(f"Error processing document: {e}")
         return []
 
-def display_tables(tables):
-    """Display tables in formatted output"""
-    if not tables:
-        print("No tables to display.")
-        return
+# def display_tables(tables):
+#     """Display tables in formatted output"""
+#     if not tables:
+#         print("No tables to display.")
+#         return
     
-    for i, table_data in enumerate(tables):
-        print(f"\n{'='*60}")
-        print(f"TABLE {i + 1}")
-        print(f"{'='*60}")
+#     for i, table_data in enumerate(tables):
+#         print(f"\n{'='*60}")
+#         print(f"TABLE {i + 1}")
+#         print(f"{'='*60}")
         
-        if not table_data:
-            print("Empty table")
-            continue
+#         if not table_data:
+#             print("Empty table")
+#             continue
         
-        # Find the maximum number of columns
-        max_cols = max(len(row) for row in table_data) if table_data else 0
+#         # Find the maximum number of columns
+#         max_cols = max(len(row) for row in table_data) if table_data else 0
         
-        # Normalize all rows to have the same number of columns
-        normalized_data = []
-        for row in table_data:
-            # Pad rows with empty strings if they have fewer columns
-            padded_row = row + [''] * (max_cols - len(row))
-            normalized_data.append(padded_row)
+#         # Normalize all rows to have the same number of columns
+#         normalized_data = []
+#         for row in table_data:
+#             # Pad rows with empty strings if they have fewer columns
+#             padded_row = row + [''] * (max_cols - len(row))
+#             normalized_data.append(padded_row)
         
-        # Display using tabulate for better formatting
-        try:
-            # Try to use first row as headers if it looks like headers
-            if len(normalized_data) > 1:
-                headers = normalized_data[0]
-                data = normalized_data[1:]
-                print(tabulate(data, headers=headers, tablefmt='grid'))
-            else:
-                print(tabulate(normalized_data, tablefmt='grid'))
-        except:
-            # Fallback to simple display
-            for j, row in enumerate(normalized_data):
-                print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
+#         # Display using tabulate for better formatting
+#         try:
+#             # Try to use first row as headers if it looks like headers
+#             if len(normalized_data) > 1:
+#                 headers = normalized_data[0]
+#                 data = normalized_data[1:]
+#                 print(tabulate(data, headers=headers, tablefmt='grid'))
+#             else:
+#                 print(tabulate(normalized_data, tablefmt='grid'))
+#         except:
+#             # Fallback to simple display
+#             for j, row in enumerate(normalized_data):
+#                 print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
         
-        print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
+#         print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
 
 def display_table_info(tables):
-    """Display tables in formatted output"""
-    if not tables:
-        print("No tables to display.")
-        return
-    
     for i, table_data in enumerate(tables):
-        print(f"\n{'='*60}")
-        print(f"TABLE {i + 1}")
-        print(f"{'='*60}")
-        
         if not table_data:
             print("Empty table")
             continue
@@ -178,26 +168,23 @@ def display_table_info(tables):
             padded_row = row + [''] * (max_cols - len(row))
             normalized_data.append(padded_row)
         
-        # Display using tabulate for better formatting
-        try:
-            # Try to use first row as headers if it looks like headers
-            if len(normalized_data) > 1:
-                headers = normalized_data[0]
-                data = normalized_data[1:]
-                print(tabulate(data, headers=headers, tablefmt='grid'))
-            else:
-                print(tabulate(normalized_data, tablefmt='grid'))
-        except:
-            # Fallback to simple display
-            for j, row in enumerate(normalized_data):
-                print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
+        # # Display using tabulate for better formatting
+        # try:
+        #     # Try to use first row as headers if it looks like headers
+        #     if len(normalized_data) > 1:
+        #         headers = normalized_data[0]
+        #         data = normalized_data[1:]
+        #         print(tabulate(data, headers=headers, tablefmt='grid'))
+        #     else:
+        #         print(tabulate(normalized_data, tablefmt='grid'))
+        # except:
+        #     # Fallback to simple display
+        #     for j, row in enumerate(normalized_data):
+        #         print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
         
-        print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
+        # print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
 
     for i, table_data in enumerate(tables):
-        print(f"\n{'='*60}")
-        print(f"TST TABLE {i + 1}")
-        # print(f"{'='*60}")
         
         if not table_data:
             print("Empty table")
@@ -214,13 +201,15 @@ def display_table_info(tables):
             normalized_data.append(padded_row)
         
         # print(f"Normalized data: {normalized_data}")
-        pick_info = {}
+        pic_info = {}
         
         # remove first line - Header Info
         normalized_data.pop(0)
         
         # extract & prepare data for display
         num_entries = len(normalized_data)
+        max_x = 0
+        max_y = 0
         for i in range(num_entries):
             # print("i:", i)
             # print(f"Normalized data: {normalized_data[i]}")
@@ -228,13 +217,40 @@ def display_table_info(tables):
             # print(f"y: {normalized_data[1][2]}")
             # print(f"symbol: {normalized_data[1][1]}")
             
-            loc_info = (normalized_data[i][0], normalized_data[i][2])
+            x_loc = int(normalized_data[i][0])
+            if x_loc > max_x:
+                max_x = x_loc
+                
+            y_loc = int(normalized_data[i][2])
+            if y_loc > max_y:
+                max_y = y_loc
+                
+            loc_info = (x_loc, y_loc)
             # print(loc_info)
             
-            pick_info[loc_info] = normalized_data[i][1]       
+            pic_info[loc_info] = normalized_data[i][1]       
         
-        print(f"Pick info: {pick_info}")
+        # print(f"Pick info: {pic_info}")
+        # print(f"Max X: {max_x}, Max Y: {max_y}")
             
+        ################
+        # Display Mosaix
+        #
+        m_cols = max_x + 1
+        m_rows = max_y + 1
+        
+        for y in range(m_rows):
+            row_display = []
+            for x in range(m_cols):
+                # Get the symbol for the current location
+                symbol = pic_info.get((x, y), ' ')
+                row_display.append(symbol)
+            # display the row
+            print(' '.join(row_display))
+            
+            
+        # show message
+        
         
         # # Display using tabulate for better formatting
         # try:
@@ -256,9 +272,7 @@ def display_table_info(tables):
 
 def main():
     """Main function"""
-    print("Google Docs Table Scraper")
-    print("=" * 40)
-    
+
     # Get URL from user
     if len(sys.argv) > 1:
         url = sys.argv[1]
@@ -273,14 +287,13 @@ def main():
         print("Error: Please provide a valid Google Docs URL")
         return
     
-    print(f"\nProcessing URL: {url}")
+    print(f"\nProcessing URL: {url}\n")
     
     # Scrape tables
     tables = scrape_google_doc_tables(url)
     
     # Display results
     if tables:
-        print(f"\nFound {len(tables)} table(s) in the document:")
         display_table_info(tables)
     else:
         print("\nNo tables found or unable to access the document.")
