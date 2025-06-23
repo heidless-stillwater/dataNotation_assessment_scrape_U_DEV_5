@@ -3,6 +3,7 @@ TOOLS Used:
 - vsCode with CoPilot active
 - GCP Documentation using boilerplace code to initiate development
     - suspect that similar/same code as recommended by Gemini
+- Google Doc Scraping. Used Biler place for basic functions i.e. read doc url, extract ID...
 - REFACTOR Opportunities:
     - Google Docs access
 

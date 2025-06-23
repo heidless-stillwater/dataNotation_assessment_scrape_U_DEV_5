@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Google Docs Table Scraper
-Scrapes tabular data from publicly available Google Docs and displays it in tabular format.
-"""
-
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -111,47 +105,6 @@ def scrape_google_doc_tables(url):
         print(f"Error processing document: {e}")
         return []
 
-# def display_tables(tables):
-#     """Display tables in formatted output"""
-#     if not tables:
-#         print("No tables to display.")
-#         return
-    
-#     for i, table_data in enumerate(tables):
-#         print(f"\n{'='*60}")
-#         print(f"TABLE {i + 1}")
-#         print(f"{'='*60}")
-        
-#         if not table_data:
-#             print("Empty table")
-#             continue
-        
-#         # Find the maximum number of columns
-#         max_cols = max(len(row) for row in table_data) if table_data else 0
-        
-#         # Normalize all rows to have the same number of columns
-#         normalized_data = []
-#         for row in table_data:
-#             # Pad rows with empty strings if they have fewer columns
-#             padded_row = row + [''] * (max_cols - len(row))
-#             normalized_data.append(padded_row)
-        
-#         # Display using tabulate for better formatting
-#         try:
-#             # Try to use first row as headers if it looks like headers
-#             if len(normalized_data) > 1:
-#                 headers = normalized_data[0]
-#                 data = normalized_data[1:]
-#                 print(tabulate(data, headers=headers, tablefmt='grid'))
-#             else:
-#                 print(tabulate(normalized_data, tablefmt='grid'))
-#         except:
-#             # Fallback to simple display
-#             for j, row in enumerate(normalized_data):
-#                 print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
-        
-#         print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
-
 def display_table_info(tables):
     for i, table_data in enumerate(tables):
         if not table_data:
@@ -168,22 +121,6 @@ def display_table_info(tables):
             padded_row = row + [''] * (max_cols - len(row))
             normalized_data.append(padded_row)
         
-        # # Display using tabulate for better formatting
-        # try:
-        #     # Try to use first row as headers if it looks like headers
-        #     if len(normalized_data) > 1:
-        #         headers = normalized_data[0]
-        #         data = normalized_data[1:]
-        #         print(tabulate(data, headers=headers, tablefmt='grid'))
-        #     else:
-        #         print(tabulate(normalized_data, tablefmt='grid'))
-        # except:
-        #     # Fallback to simple display
-        #     for j, row in enumerate(normalized_data):
-        #         print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
-        
-        # print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
-
     for i, table_data in enumerate(tables):
         
         if not table_data:
@@ -211,12 +148,6 @@ def display_table_info(tables):
         max_x = 0
         max_y = 0
         for i in range(num_entries):
-            # print("i:", i)
-            # print(f"Normalized data: {normalized_data[i]}")
-            # print(f"x: {normalized_data[1][0]}")
-            # print(f"y: {normalized_data[1][2]}")
-            # print(f"symbol: {normalized_data[1][1]}")
-            
             x_loc = int(normalized_data[i][0])
             if x_loc > max_x:
                 max_x = x_loc
@@ -249,27 +180,6 @@ def display_table_info(tables):
             print(' '.join(row_display))
             
             
-        # show message
-        
-        
-        # # Display using tabulate for better formatting
-        # try:
-        #     # Try to use first row as headers if it looks like headers
-        #     if len(normalized_data) > 1:
-        #         headers = normalized_data[0]
-        #         data = normalized_data[1:]
-        #         print(tabulate(data, headers=headers, tablefmt='grid'))
-        #     else:
-                # print(tabulate(normalized_data, tablefmt='grid'))
-        #         print(normalized_data)
-        # except:
-            # test = 0
-        #     # Fallback to simple display
-        #     for j, row in enumerate(normalized_data):
-        #         print(f"Row {j + 1}: {' | '.join(str(cell) for cell in row)}")
-        
-        # print(f"\nTable dimensions: {len(normalized_data)} rows × {max_cols} columns")
-
 def main():
     """Main function"""
 
