@@ -1,5 +1,4 @@
 asgiref==3.5.0
-beautifulsoup4==4.13.4
 boto3==1.24.94
 botocore==1.27.94
 cachetools==5.3.0
@@ -50,9 +49,7 @@ requests-oauthlib==2.0.0
 rsa==4.9
 s3transfer==0.6.0
 six==1.16.0
-soupsieve==2.7
 sqlparse==0.4.2
-tabulate==0.9.0
 typing_extensions==4.1.1
 uritemplate==4.1.1
 urllib3==1.26.12
