@@ -1,3 +1,18 @@
+"""
+    Google Docs Table Scraper
+    =========================
+    This script scrapes tables from a publicly accessible Google Doc and displays them in a mosaic format.
+    
+    It uses BeautifulSoup for HTML parsing and tabulate for displaying tables.
+    
+    Usage:
+        python gdoc_scrape_0.py <google_doc_url>
+        
+    The script is designed to handle both published and regular Google Docs URLs.
+    
+    It extracts the document ID from the provided URL, fetches the document content, and processes the tables using BeautifulSoup.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -5,7 +20,7 @@ from tabulate import tabulate
 import sys
 
 def extract_document_id(url):
-    """Extract document ID from Google Docs URL"""
+    """Extract document ID from Google Docs URL - BOILERPLATE"""
     # Pattern for published docs: /d/e/DOCUMENT_ID/pub
     pub_pattern = r'/d/e/([a-zA-Z0-9-_]+)/pub'
     pub_match = re.search(pub_pattern, url)
@@ -21,8 +36,9 @@ def extract_document_id(url):
     return None
 
 def convert_to_public_url(url):
-    """Convert Google Docs URL to publicly accessible format"""
+    """Convert Google Docs URL to publicly accessible format - BOILERPLATE"""
     doc_id = extract_document_id(url)
+    
     if not doc_id:
         return None
     
@@ -34,7 +50,10 @@ def convert_to_public_url(url):
         return f"https://docs.google.com/document/d/{doc_id}/export?format=html"
 
 def scrape_google_doc_tables(url):
-    """Scrape tables from a publicly available Google Doc"""
+    """
+        Scrape tables from a publicly available Google Doc - BOILERPLATE customized re: HTML Parse/BeautifulSoup
+        Specifically dealing with tables contained within a Google Doc.
+    """
     try:
         # Convert URL to public format if needed
         public_url = convert_to_public_url(url)
@@ -105,22 +124,37 @@ def scrape_google_doc_tables(url):
         print(f"Error processing document: {e}")
         return []
 
-def display_table_info(tables):
+def normalize_table_data(table_data):  
+    """    
+        Normalize table data to ensure all rows have the same number of columns.
+        This is necessary for proper display in a mosaic format. 
+        It pads rows with empty strings if they have fewer columns than the maximum.
+    """
+    # Find the maximum number of columns
+    max_cols = max(len(row) for row in table_data) if table_data else 0
+    
+    # Normalize all rows to have the same number of columns
+    normalized_data = []
+    for row in table_data:
+        # Pad rows with empty strings if they have fewer columns
+        padded_row = row + [''] * (max_cols - len(row))
+        normalized_data.append(padded_row)
+    
+    return normalized_data
+
+
+def display_mosaic(tables):
+    """
+        Can handle multiple tables from the document.
+        Display the scraped tables in a mosaic format.
+        Each table is displayed separately, with coordinates and symbols.
+    """
+    # normalize the data - this is to ensure that all rows in each table have the same number of columns
     for i, table_data in enumerate(tables):
-        if not table_data:
-            print("Empty table")
-            continue
+        normalized_data = normalize_table_data(table_data)
         
-        # Find the maximum number of columns
-        max_cols = max(len(row) for row in table_data) if table_data else 0
-        
-        # Normalize all rows to have the same number of columns
-        normalized_data = []
-        for row in table_data:
-            # Pad rows with empty strings if they have fewer columns
-            padded_row = row + [''] * (max_cols - len(row))
-            normalized_data.append(padded_row)
-        
+    # re-format data to enable lookup by coordinates
+    # and display in a mosaic format
     for i, table_data in enumerate(tables):
         
         if not table_data:
@@ -147,31 +181,41 @@ def display_table_info(tables):
         num_entries = len(normalized_data)
         max_x = 0
         max_y = 0
-        for i in range(num_entries):
-            x_loc = int(normalized_data[i][0])
+        
+        for i, row in enumerate(normalized_data):
+            # Extract x, y, and symbol from the row
+            try:
+                x_loc = int(row[0])  # Assuming first column is x coordinate
+                y_loc = int(row[2])  # Assuming third column is y coordinate
+                symbol = row[1]      # Assuming second column is the symbol
+            except ValueError as e:
+                print(f"Skipping row {i} due to value error: {e}")
+                continue
+            
             if x_loc > max_x:
                 max_x = x_loc
                 
-            y_loc = int(normalized_data[i][2])
             if y_loc > max_y:
                 max_y = y_loc
                 
+            # print("x_max:", max_x, "y_max:", max_y)
             loc_info = (x_loc, y_loc)
             # print(loc_info)
-            
-            pic_info[loc_info] = normalized_data[i][1]       
-        
-        # print(f"Pick info: {pic_info}")
-        # print(f"Max X: {max_x}, Max Y: {max_y}")
-            
+            pic_info[loc_info] = symbol
+             
         ################
-        # Display Mosaix
+        # Display Mosaic
         #
         m_cols = max_x + 1
-        m_rows = max_y + 1
+        m_rows = max_y + 2
+        
+        # display symbol for each co-ordinate if specified, else display empty space
+        print(f"Displaying Mosaic for Table {i + 1} (Size: {m_rows}x{m_cols})")
+        print(f"Total Entries: {num_entries}\n")
         
         for y in range(m_rows):
             row_display = []
+            # build the row for the current y coordinate
             for x in range(m_cols):
                 # Get the symbol for the current location
                 symbol = pic_info.get((x, y), ' ')
@@ -181,8 +225,7 @@ def display_table_info(tables):
             
             
 def main():
-    """Main function"""
-
+    
     # Get URL from user
     if len(sys.argv) > 1:
         url = sys.argv[1]
@@ -193,6 +236,7 @@ def main():
         print("Error: No URL provided")
         return
     
+    # specifically limit to Google Docs URLs
     if 'docs.google.com' not in url:
         print("Error: Please provide a valid Google Docs URL")
         return
@@ -204,13 +248,9 @@ def main():
     
     # Display results
     if tables:
-        display_table_info(tables)
+        display_mosaic(tables)
     else:
-        print("\nNo tables found or unable to access the document.")
-        print("\nTroubleshooting tips:")
-        print("1. Make sure the document is publicly accessible")
-        print("2. Try using the 'Published to web' URL format")
-        print("3. Check if the document contains actual HTML tables")
+        print("\nUnable to access document.")
 
 if __name__ == "__main__":
     main()
